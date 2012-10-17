@@ -1,6 +1,6 @@
 .DS_Store
 saved#*message*
-%backup*
+/backups
 .bookmarks.el
 .dir.locals.el
 .emacs.desktop
