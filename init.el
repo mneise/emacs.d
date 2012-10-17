@@ -1,3 +1,5 @@
+;; ========== Packaging ==========
+
 ;; add package repositories
 (require 'package)
 (package-initialize)
@@ -32,6 +34,9 @@
 (dolist (package c/elpa-packages)
   (c/require-package package))
 
+
+;; ========== Appearance ==========
+
 ;; disable menu bar and tool bar
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -43,13 +48,44 @@
 (require 'maxframe)
 (maximize-frame)
 
-;; python
-(require 'python)
-(add-hook 'python-mode-hook 'flymake-mode)
+
+;; ========== Indentation ==========
+
+;; use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; for C based modes
+(setq c-basic-offset 4)
+
+
+;; ========== Place Backup Files in Specific Directory ==========
+
+;; Enable backup files.
+(setq make-backup-files t)
+
+;; Enable versioning with default values (keep five last versions, I think!)
+(setq version-control t)
+
+;; Save all backup file in this directory.
+(setq backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
+
+
+;; ========== Version control with magit ==========
 
 ;; magit configurations
 (require 'magit)
 (define-key global-map (kbd "C-c mm") 'magit-status)
+
+
+;; ========== Python ==========
+
+;; use fgallina's python mode
+(require 'python)
+(add-hook 'python-mode-hook 'flymake-mode)
+
+
+;; ========== Flymake ==========
 
 ;; Flymake python configurations
 (defun c/flymake-python-init ()
@@ -66,6 +102,13 @@
      (add-to-list 'flymake-allowed-file-name-masks
                   (list "\\.py\\'" 'c/flymake-python-init))))
 
+;; Flymake php configuration
+(require 'flymake-php)
+(add-hook 'php-mode-hook 'flymake-php-load)
+
+
+;; ========== Web developmetn setup ==========
+
 ;; load mulit-web-mode
 (require 'multi-web-mode)
 (setq mweb-default-major-mode 'html-mode)
@@ -74,24 +117,3 @@
                   (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
 (multi-web-global-mode 1)
-
-;; use spaces instead of tabs
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-;; for C based modes
-(setq c-basic-offset 4)
-
-;; Flymake php configuration
-(require 'flymake-php)
-(add-hook 'php-mode-hook 'flymake-php-load)
-
-;; ========== Place Backup Files in Specific Directory ==========
-
-;; Enable backup files.
-(setq make-backup-files t)
-
-;; Enable versioning with default values (keep five last versions, I think!)
-(setq version-control t)
-
-;; Save all backup file in this directory.
-(setq backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
