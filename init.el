@@ -26,7 +26,7 @@
                         maxframe
                         multi-web-mode
                         php-mode
-                        python-mode
+                        python
                         solarized-theme
                         ))
 (dolist (package c/elpa-packages)
@@ -44,8 +44,7 @@
 (maximize-frame)
 
 ;; python
-(require 'python-mode)
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+(require 'python)
 (add-hook 'python-mode-hook 'flymake-mode)
 
 ;; magit configurations
@@ -85,3 +84,14 @@
 ;; Flymake php configuration
 (require 'flymake-php)
 (add-hook 'php-mode-hook 'flymake-php-load)
+
+;; ========== Place Backup Files in Specific Directory ==========
+
+;; Enable backup files.
+(setq make-backup-files t)
+
+;; Enable versioning with default values (keep five last versions, I think!)
+(setq version-control t)
+
+;; Save all backup file in this directory.
+(setq backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
