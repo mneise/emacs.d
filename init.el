@@ -130,3 +130,15 @@
                   (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
 (multi-web-global-mode 1)
+
+
+;; ======== I18n ========
+
+(setq utf-translate-cjk-mode nil)
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8-mac)
+(setq locale-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
