@@ -93,6 +93,11 @@
 (add-hook 'python-mode-hook 'flymake-mode)
 
 
+;; ========== Scala ==========
+
+(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
+(require 'scala-mode)
+
 ;; ========== Flymake ==========
 
 ;; Flymake python configurations
