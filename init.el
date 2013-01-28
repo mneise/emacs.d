@@ -29,6 +29,7 @@
                         multi-web-mode
                         php-mode
                         python
+                        sml-mode
                         solarized-theme
                         ))
 (dolist (package c/elpa-packages)
@@ -97,6 +98,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/scala-mode2/")
 (require 'scala-mode)
+
 
 ;; ========== Flymake ==========
 
