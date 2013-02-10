@@ -202,6 +202,7 @@
    '(
      helm-c-source-buffers-list
      helm-c-source-git-files
+     helm-c-source-hg-list-files
      helm-c-source-recentf
      helm-c-source-buffer-not-found
      )
@@ -214,6 +215,13 @@
                   (magit-get-top-dir default-directory))
          ad-do-it))
      (ad-activate 'helm-c-git-files)))
+
+(eval-after-load 'helm-ls-hg
+  '(progn
+     (defadvice helm-hg-list-files (around check-hg-repo-p)
+       (when (helm-hg-root)
+         ad-do-it))
+     (ad-activate 'helm-hg-list-files)))
 
 ;; ========== Multiple Cursors ==========
 
