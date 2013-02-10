@@ -19,16 +19,24 @@
         (c/require-package package min-version t)))))
 
 (setq c/elpa-packages '(
+                        auto-complete
+                        expand-region
                         flymake
                         flymake-cursor
                         flymake-jshint
                         flymake-php
                         flymake-python-pyflakes
+                        helm
+                        helm-git
+                        helm-gtags
+                        helm-mercurial-queue
                         magit
                         maxframe
                         multi-web-mode
+                        multiple-cursors
                         php-mode
                         python
+                        scala-mode2
                         sml-mode
                         solarized-theme
                         ))
@@ -77,7 +85,7 @@
 (setq version-control t)
 
 ;; Save all backup file in this directory.
-(setq backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
+(setq backup-directory-alist (quote (("." . "~/.emacs.d/backups/"))))
 
 
 ;; ========== Version control with magit ==========
@@ -93,12 +101,19 @@
 (require 'python)
 (add-hook 'python-mode-hook 'flymake-mode)
 
+;; ========== PHP ==========
 
-;; ========== Scala ==========
+(require 'php-mode)
 
-(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
-(require 'scala-mode)
+(defun c/php-mode-initialization () 
+  (gtags-mode 1))
 
+(add-hook 'php-mode-hook 'c/php-mode-initialization)
+
+;; ========== Autocomplete ==========
+
+(require 'auto-complete-config)
+(ac-config-default)
 
 ;; ========== Flymake ==========
 
@@ -166,7 +181,6 @@
 
 ;; ========== Helm ==========
 
-(add-to-list 'load-path "~/.emacs.d/helm")
 (require 'helm-config)
 (helm-mode 1)
 
