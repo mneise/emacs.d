@@ -122,19 +122,106 @@
 (add-hook 'php-mode-hook 'flymake-php-load)
 
 
+;; ========== GNU Global ==========
+
+(add-to-list 'load-path "~/.emacs.d/gtags/")
+(require 'gtags)
+
+;;Update gtags database to synchronize the changes in source code (https://github.com/fgeller/emacs.d/blob/master/init.org)
+
+(defun c/gtags-update-single (filename gtags-root) "Update GNU Global database in GTAGS-ROOT for changes in file named FILENAME."
+  (interactive) 
+  (start-process "update-gtags" "update-gtags" "bash" "-c" 
+                  (concat "cd " gtags-root " ; gtags -i --single-update " filename )))
+
+(defun c/gtags-update-current-file () "Updates a GNU Global database based on the definitions in the current file."
+  (interactive) 
+  (let* ((gtags-root (gtags-get-rootpath)) 
+         (filename (buffer-file-name (current-buffer)))) 
+    (c/gtags-update-single filename gtags-root) 
+    (message "Gtags updated for %s" filename)))
+
+(defun c/gtags-update-hook () "Optionally updates the GNU Global database incrementally, if applicable."
+  (when (and (boundp 'gtags-mode) gtags-mode) 
+    (when (gtags-get-rootpath) (c/gtags-update-current-file))))
+
+(defun c/initialize-gtags-mode () 
+  (add-hook 'after-save-hook 'c/gtags-update-hook)) 
+
+(add-hook 'gtags-mode-hook 'c/initialize-gtags-mode)
+
+(define-key gtags-mode-map (kbd "C-h ;") 'helm-gtags-find-tag)
+(define-key gtags-mode-map (kbd "C-h ,") 'helm-gtags-find-rtag)
+
 ;; ========== Web developmetn setup ==========
 
 ;; load mulit-web-mode
 (require 'multi-web-mode)
 (setq mweb-default-major-mode 'html-mode)
-(setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                  (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
+(setq mweb-tags '((js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
                   (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+(setq mweb-filename-extensions '("htm" "html" "ctp" "phtml" "php4" "php5"))
 (multi-web-global-mode 1)
 
 
-;; ======== I18n ========
+;; ========== Helm ==========
+
+(add-to-list 'load-path "~/.emacs.d/helm")
+(require 'helm-config)
+(helm-mode 1)
+
+(require 'helm-git)
+(require 'helm-ls-hg)
+
+(eval-after-load 'helm '(eval-after-load 'gtags '(progn (require 'helm-gtags))))
+
+(define-key global-map (kbd "C-;") 'c/helm-jump)
+
+(setq helm-ff-auto-update-initial-value nil)
+
+(defun c/helm-jump ()
+  (interactive)
+  (helm-other-buffer
+   '(
+     helm-c-source-buffers-list
+     helm-c-source-git-files
+     helm-c-source-recentf
+     helm-c-source-buffer-not-found
+     )
+   "*c/helm-jump*"))
+
+(eval-after-load 'helm-git
+  '(progn
+     (defadvice helm-c-git-files (around check-git-repo-p)
+       (when (and (boundp 'default-directory)
+                  (magit-get-top-dir default-directory))
+         ad-do-it))
+     (ad-activate 'helm-c-git-files)))
+
+;; ========== Multiple Cursors ==========
+
+;; https://github.com/magnars/multiple-cursors.el
+
+(require 'multiple-cursors)
+
+(global-set-key (kbd "C-c m n") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-c m p") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c m a") 'mc/mark-all-like-this)
+
+;; ========== Expand Region ==========
+
+;; git://github.com/magnars/expand-region.el.git
+
+(require 'expand-region)
+
+(global-set-key (kbd "C-c >") 'er/expand-region)
+(global-set-key (kbd "C-c <") 'er/contract-region)
+
+;; ========== Parantheses ==========
+
+(require 'electric)
+
+;; ========== I18n ==========
 
 (setq utf-translate-cjk-mode nil)
 (set-language-environment 'utf-8)
