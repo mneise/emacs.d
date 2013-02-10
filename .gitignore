@@ -1,6 +1,6 @@
 .DS_Store
 saved#*message*
-/backups
+%backup*
 .bookmarks.el
 .dir.locals.el
 .emacs.desktop
@@ -17,3 +17,16 @@ saved
 auto-save-list
 *.elc
 /tramp
+/url/cookies
+/init.el
+/srecode-map.el
+/org-clock-save.el
+/emacs-sources
+/.mc-lists.el
+/semanticdb
+/ede-projects.el
+/var/pcache/ucs-utils
+/bbdb
+/eshell/history
+/recentf*
+/backups
