@@ -32,6 +32,7 @@
                         helm-mercurial-queue
                         magit
                         maxframe
+                        monky
                         multi-web-mode
                         multiple-cursors
                         php-mode
