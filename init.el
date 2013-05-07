@@ -32,7 +32,6 @@
                         helm-mercurial-queue
                         magit
                         maxframe
-                        monky
                         multi-web-mode
                         multiple-cursors
                         php-mode
@@ -97,6 +96,14 @@
 ;; magit configurations
 (require 'magit)
 (define-key global-map (kbd "C-c mm") 'magit-status)
+
+
+;; ========== Version control with monky ==========
+
+(add-to-list 'load-path "~/.emacs.d/monky")
+(require 'monky)
+(setq monky-process-type 'cmdserver)
+(define-key global-map (kbd "C-c mh") 'monky-status)
 
 
 ;; ========== Python ==========
