@@ -254,6 +254,9 @@
          ad-do-it))
      (ad-activate 'helm-hg-list-files)))
 
+(setq helm-idle-delay 0.01)
+(setq helm-input-idle-delay 0.01)
+
 ;; ========== Multiple Cursors ==========
 
 ;; https://github.com/magnars/multiple-cursors.el
