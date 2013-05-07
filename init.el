@@ -101,8 +101,14 @@
 ;; Enable backup files.
 (setq make-backup-files t)
 
-;; Enable versioning with default values (keep five last versions, I think!)
-(setq version-control t)
+;; Make backups by copying
+(setq backup-by-copying t)
+
+;; Enable versioning with default values
+(setq delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
 
 ;; Save all backup file in this directory.
 (setq backup-directory-alist (quote (("." . "~/.emacs.d/backups/"))))
