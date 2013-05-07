@@ -144,6 +144,10 @@
 
 (add-hook 'php-mode-hook 'c/php-mode-initialization)
 
+;; ========== Octave ==========
+
+(add-to-list 'auto-mode-alist '(".m$" . octave-mode))
+
 ;; ========== Autocomplete ==========
 
 (require 'auto-complete-config)
