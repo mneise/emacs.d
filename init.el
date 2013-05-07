@@ -50,16 +50,27 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
-;; set font and font size
-(set-face-attribute 'default nil :font "courier" :height 160)
+;; turn on column number mode
+(column-number-mode 1)
 
-;; maximize frame
-(require 'maxframe)
-(maximize-frame)
+;; set font and font size
+(set-face-attribute 'default nil :font "Consolas" :height 160)
+
+;; ;; maximize frame
+;; (require 'maxframe)
+;; (maximize-frame)
 
 ;; use color-theme-sanityinc-solarized
 (add-to-list 'load-path "~/.emacs.d/color-theme-sanityinc-solarized")
 (require 'color-theme-sanityinc-solarized)
+
+;; graphically indicate the location of the fill column by drawing a thin line
+(require 'fill-column-indicator)
+(setq fci-rule-width 2)
+
+;; Show fill column line when php mode is enables
+(add-hook 'php-mode-hook 'fci-mode)
+
 
 ;; ========== Key Remapping ==========
 
