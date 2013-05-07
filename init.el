@@ -202,14 +202,14 @@
 (define-key gtags-mode-map (kbd "C-h ;") 'helm-gtags-find-tag)
 (define-key gtags-mode-map (kbd "C-h ,") 'helm-gtags-find-rtag)
 
-;; ========== Web developmetn setup ==========
+;; ========== Web development setup ==========
 
 ;; load mulit-web-mode
 (require 'multi-web-mode)
 (setq mweb-default-major-mode 'html-mode)
 (setq mweb-tags '((js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
                   (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("htm" "html" "ctp" "phtml" "php4" "php5"))
+(setq mweb-filename-extensions '("htm" "html" "ctp" "phtml" "php4" "php5" "tpl"))
 (multi-web-global-mode 1)
 
 
