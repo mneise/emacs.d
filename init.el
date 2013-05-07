@@ -273,12 +273,13 @@
 
 (require 'expand-region)
 
-(global-set-key (kbd "C-c >") 'er/expand-region)
-(global-set-key (kbd "C-c <") 'er/contract-region)
+(global-set-key (kbd "C-c e w") 'er/expand-region)
+(global-set-key (kbd "C-c e s") 'er/contract-region)
 
 ;; ========== Parantheses ==========
 
 (require 'electric)
+(electric-pair-mode 1)
 
 ;; ========== I18n ==========
 
