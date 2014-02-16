@@ -32,19 +32,21 @@
                         flymake-jshint
                         flymake-php
                         flymake-python-pyflakes
+                        gtags
+                        go-mode
                         helm
                         helm-git
                         helm-gtags
-                        helm-mercurial-queue
                         magit
                         maxframe
-                        multi-web-mode
                         multiple-cursors
                         php-mode
                         python
                         scala-mode2
                         sml-mode
                         solarized-theme
+                        web-mode
+                        yasnippet
                         ))
 (dolist (package c/elpa-packages)
   (c/require-package package))
@@ -60,7 +62,7 @@
 (column-number-mode 1)
 
 ;; set font and font size
-(set-face-attribute 'default nil :font "Consolas" :height 160)
+(set-face-attribute 'default nil :font "Consolas" :height 140)
 
 ;; ;; maximize frame
 ;; (require 'maxframe)
@@ -144,9 +146,15 @@
 
 (add-hook 'php-mode-hook 'c/php-mode-initialization)
 
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
 ;; ========== Octave ==========
 
 (add-to-list 'auto-mode-alist '(".m$" . octave-mode))
+
+;; ========== Scala ==========
+
+(add-to-list 'auto-mode-alist '(".scala" . scala-mode))
 
 ;; ========== Autocomplete ==========
 
@@ -156,31 +164,33 @@
 ;; ========== Flymake ==========
 
 ;; Flymake python configurations
-(defun c/flymake-python-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-intemp))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list "pycheckers"  (list local-file))))
+
+;; code checking via flymake
+;; set code checker here from "epylint", "pyflakes"
+(setq pycodechecker "pyflakes")
+(when (load "flymake" t)
+  (defun flymake-pycodecheck-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+           (local-file (file-relative-name
+                        temp-file
+                        (file-name-directory buffer-file-name))))
+      (list pycodechecker (list local-file))))
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.py\\'" flymake-pycodecheck-init)))
 (eval-after-load 'flymake
   '(progn
      (require 'flymake-cursor)
-     (setq flymake-run-in-place nil)  ;; I want my copies in the system temp dir.
-     (add-to-list 'flymake-allowed-file-name-masks
-                  (list "\\.py\\'" 'c/flymake-python-init))))
+     (setq flymake-run-in-place nil)))  ;; I want my copies in the system temp dir.
+
 
 ;; Flymake php configuration
 (require 'flymake-php)
 (add-hook 'php-mode-hook 'flymake-php-load)
 
+;; ========== Gtags ==========
 
-;; ========== GNU Global ==========
-
-(add-to-list 'load-path "~/.emacs.d/gtags/")
-(require 'gtags)
-
-;;Update gtags database to synchronize the changes in source code (https://github.com/fgeller/emacs.d/blob/master/init.org)
+;; Update gtags database to synchronize the changes in source code (https://github.com/fgeller/emacs.d/blob/master/init.org)
 
 (defun c/gtags-update-single (filename gtags-root) "Update GNU Global database in GTAGS-ROOT for changes in file named FILENAME."
   (interactive) 
@@ -203,19 +213,25 @@
 
 (add-hook 'gtags-mode-hook 'c/initialize-gtags-mode)
 
-(define-key gtags-mode-map (kbd "C-h ;") 'helm-gtags-find-tag)
-(define-key gtags-mode-map (kbd "C-h ,") 'helm-gtags-find-rtag)
+;;; Enable helm-gtags-mode
+(add-hook 'php-mode-hook 'helm-gtags-mode)
+
+;; helm-gtags key bindings
+(eval-after-load "helm-gtags"
+  '(progn
+     (define-key helm-gtags-mode-map (kbd "C-h ;") 'helm-gtags-find-tag)
+     (define-key helm-gtags-mode-map (kbd "C-h ,") 'helm-gtags-find-rtag)))
 
 ;; ========== Web development setup ==========
 
-;; load mulit-web-mode
-(require 'multi-web-mode)
-(setq mweb-default-major-mode 'html-mode)
-(setq mweb-tags '((js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
-                  (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("htm" "html" "ctp" "phtml" "php4" "php5" "tpl"))
-(multi-web-global-mode 1)
+;; load web-mode
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
 
+(setq web-mode-markup-indent-offset 4)
+
+;; don't override key mapping for helm
+(define-key web-mode-map (kbd "C-;") nil)
 
 ;; ========== Helm ==========
 
@@ -223,6 +239,7 @@
 (helm-mode 1)
 
 (require 'helm-git)
+(add-to-list 'load-path "~/.emacs.d/helm-ls-hg")
 (require 'helm-ls-hg)
 
 (eval-after-load 'helm '(eval-after-load 'gtags '(progn (require 'helm-gtags))))
