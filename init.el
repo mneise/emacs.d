@@ -73,8 +73,10 @@
 (require 'color-theme-sanityinc-solarized)
 
 ;; graphically indicate the location of the fill column by drawing a thin line
+(add-to-list 'load-path "~/.emacs.d/fill-column-indicator")
 (require 'fill-column-indicator)
 (setq fci-rule-width 2)
+(setq-default fill-column 80)
 
 ;; Show fill column line when php mode is enables
 (add-hook 'php-mode-hook 'fci-mode)
