@@ -25,6 +25,7 @@
         (c/require-package package min-version t)))))
 
 (setq c/elpa-packages '(
+                        ag
                         auto-complete
                         expand-region
                         flymake
@@ -35,8 +36,9 @@
                         gtags
                         go-mode
                         helm
-                        helm-git
+                        helm-ls-git
                         helm-gtags
+                        js2-mode
                         magit
                         maxframe
                         multiple-cursors
@@ -65,8 +67,8 @@
 (set-face-attribute 'default nil :font "Consolas" :height 140)
 
 ;; ;; maximize frame
-;; (require 'maxframe)
-;; (maximize-frame)
+(require 'maxframe)
+(maximize-frame)
 
 ;; use color-theme-sanityinc-solarized
 (add-to-list 'load-path "~/.emacs.d/color-theme-sanityinc-solarized")
@@ -158,6 +160,14 @@
 
 (add-to-list 'auto-mode-alist '(".scala" . scala-mode))
 
+;; ========== JavaScript ==========
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;; use tern
+(add-to-list 'load-path "~/tern/emacs/")
+(autoload 'tern-mode "tern.el" nil t)
+(add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+
 ;; ========== Autocomplete ==========
 
 (require 'auto-complete-config)
@@ -240,7 +250,7 @@
 (require 'helm-config)
 (helm-mode 1)
 
-(require 'helm-git)
+(require 'helm-ls-git)
 (add-to-list 'load-path "~/.emacs.d/helm-ls-hg")
 (require 'helm-ls-hg)
 
@@ -254,11 +264,11 @@
   (interactive)
   (helm-other-buffer
    '(
-     helm-c-source-buffers-list
-     helm-c-source-git-files
-     helm-c-source-hg-list-files
-     helm-c-source-recentf
-     helm-c-source-buffer-not-found
+     helm-source-buffers-list
+     helm-source-ls-git
+     helm-source-hg-list-files
+     helm-source-recentf
+     helm-source-buffer-not-found
      )
    "*c/helm-jump*"))
 
@@ -314,3 +324,8 @@
 (set-terminal-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
+
+;; ========== Silver Searcher ==========
+
+(require 'ag)
+(global-set-key (kbd "C-c a g") 'ag-project)
