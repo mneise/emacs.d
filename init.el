@@ -35,17 +35,16 @@
                         auto-complete
                         cider
                         clojure-mode
+                        color-theme-sanityinc-solarized
                         expand-region
                         fill-column-indicator
                         go-mode
                         helm
-                        helm-ls-git
                         js2-mode
                         magit
                         multiple-cursors
                         python
                         scala-mode2
-                        solarized-theme
                         web-mode
                         yasnippet
                         ))
@@ -68,10 +67,9 @@
 ;; ;; maximize frame
 (toggle-frame-maximized)
 
-;; use color-theme-sanityinc-solarized
-(add-to-list 'load-path "~/.emacs.d/color-theme-sanityinc-solarized")
+;; use steve purcell's version of the solarized theme
 (require 'color-theme-sanityinc-solarized)
-(color-theme-sanityinc-solarized-light)
+(load-theme 'sanityinc-solarized-light t)
 
 ;; graphically indicate the location of the fill column by drawing a thin line
 (require 'fill-column-indicator)
@@ -198,19 +196,17 @@
 ;; ========== Helm ==========
 
 (require 'helm-config)
+(add-to-list 'load-path "~/.emacs.d/helm-ls-git")
 (require 'helm-ls-git)
 
 (helm-mode 1)
 
 (define-key global-map (kbd "C-;") 'c/helm-jump)
-
-(setq helm-ff-auto-update-initial-value nil)
-(setq helm-ff-transformer-show-only-basename nil)
+(define-key global-map (kbd "C-x C-f") 'helm-find-files)
 
 (defun c/helm-jump ()
   (interactive)
-  (helm :sources '(
-                   helm-source-buffers-list
+  (helm :sources '(helm-source-buffers-list
                    helm-source-ls-git
                    helm-source-recentf
                    helm-source-buffer-not-found)))

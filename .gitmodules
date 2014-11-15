@@ -1,6 +1,0 @@
-[submodule "color-theme-sanityinc-solarized"]
-	path = color-theme-sanityinc-solarized
-	url = git://github.com/fgeller/color-theme-sanityinc-solarized.git
-[submodule "monky"]
-	path = monky
-	url = git://github.com/ananthakumaran/monky.git
