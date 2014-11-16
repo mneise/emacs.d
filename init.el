@@ -76,7 +76,6 @@
 (setq fci-rule-width 2)
 (setq fci-rule-color "#eee8d5")
 (setq fill-column 80)
-(fci-mode 1)
 
 ;; always add new line at the end
 (setq require-final-newline t)
@@ -102,7 +101,7 @@
 
 ;; ========== Key Remapping ==========
 
-;;; I prefer cmd key for meta
+;; I prefer cmd key for meta
 (setq mac-option-key-is-meta nil
       mac-command-key-is-meta t
       mac-command-modifier 'meta
@@ -152,12 +151,13 @@
 (add-to-list 'load-path "~/tern/emacs/")
 (autoload 'tern-mode "tern.el" nil t)
 (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-
+(add-hook 'js2-mode-hook 'fci-mode)
 
 ;; ========== Clojure ==========
 
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojure-mode-hook 'cider-mode)
+(add-hook 'clojure-mode-hook 'fci-mode)
 
 ;; cider
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
