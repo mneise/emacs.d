@@ -58,6 +58,7 @@
 ;; disable menu bar and tool bar
 (menu-bar-mode -1)
 (tool-bar-mode -1)
+(scroll-bar-mode -1)
 
 ;; turn on column number mode
 (column-number-mode 1)
