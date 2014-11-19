@@ -40,6 +40,7 @@
                         fill-column-indicator
                         go-mode
                         helm
+                        helm-ls-git
                         js2-mode
                         magit
                         multiple-cursors
@@ -196,7 +197,6 @@
 ;; ========== Helm ==========
 
 (require 'helm-config)
-(add-to-list 'load-path "~/.emacs.d/helm-ls-git")
 (require 'helm-ls-git)
 
 (helm-mode 1)
@@ -206,8 +206,8 @@
 
 (defun c/helm-jump ()
   (interactive)
-  (helm :sources '(helm-source-buffers-list
-                   helm-source-ls-git
+  (helm :sources `(helm-source-buffers-list
+                   ,(helm-make-source "Git files" 'helm-ls-git-source)
                    helm-source-recentf
                    helm-source-buffer-not-found)))
 
