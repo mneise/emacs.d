@@ -153,15 +153,22 @@
 (add-to-list 'load-path "~/tern/emacs/")
 (autoload 'tern-mode "tern.el" nil t)
 (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+
 (add-hook 'js2-mode-hook 'fci-mode)
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (set-fill-column 80)))
 
 ;; ========== Clojure ==========
 
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'clojure-mode-hook 'cider-mode)
 (add-hook 'clojure-mode-hook 'fci-mode)
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (set-fill-column 80)))
 
 ;; cider
+(add-hook 'clojure-mode-hook 'cider-mode)
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
 ;; ac-cider
@@ -247,3 +254,21 @@
 
 (require 'ag)
 (global-set-key (kbd "C-c a g") 'ag-project)
+
+
+;; ========== Org ==========
+
+(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'org-mode-hook
+          (lambda ()
+            (set-fill-column 80)))
+(add-hook 'org-mode-hook 'auto-fill-mode)
+
+
+;; ========== Check Spelling ==========
+
+(global-set-key (kbd "C-c s w") 'ispell-word)
+
+;; don't override key mapping for helm
+(require 'flyspell)
+(define-key flyspell-mode-map (kbd "C-;") nil)
