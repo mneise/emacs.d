@@ -38,9 +38,11 @@
                         color-theme-sanityinc-solarized
                         expand-region
                         fill-column-indicator
+                        fingers
                         go-mode
                         helm
                         helm-ls-git
+                        highlight-thing
                         js2-mode
                         magit
                         multiple-cursors
@@ -277,53 +279,39 @@
 ;; ========== Use fgeller's Fingers Mode ==========
 ;; https://github.com/fgeller/fingers.el
 
-(add-to-list 'load-path "~/.emacs.d/fingers.el")
-
 (require 'fingers)
 (require 'fingers-qwerty)
 
+(setq fingers-region-specifiers fingers-qwerty-region-specifiers)
 (setq fingers-keyboard-layout-mapper 'fingers-workman-to-qwerty)
 (fingers-reset-bindings)
-(setq fingers-selection-specifiers
-      '((char . ?b)
-        (char-and-whitespace . ?B)
-        (line . ?f)
-        (line-rest . ?r)
-        (word . ?d)
-        (word-and-whitespace . ?D)
-        (symbol . ?e)
-        (symbol-and-whitespace . ?E)
-        (inside-pair . ?s)
-        (with-pair . ?a)
-        (with-pair-and-whitespace . ?q)))
 
 (define-key fingers-mode-x-map (kbd "g") 'magit-status)
+(define-key fingers-mode-x-map (kbd "f") 'helm-find-files)
 (define-key fingers-mode-map (kbd "m") 'ag-project)
 
 (require 'key-chord)
 (key-chord-mode 1)
-(key-chord-define-global "fj" 'fingers-mode-visual-toggle)
+(key-chord-define-global "fj" 'global-fingers-mode)
+(add-to-list 'fingers-mode-excluded-major-modes 'magit-status-mode)
 
-;; https://github.com/fgeller/emacs.d/blob/master/fingers.org
 (defun fingers-mode-visual-toggle ()
-  (interactive)
-  (fingers-mode-toggle-globally)
-  (let ((faces-to-toggle '(fringe mode-line mode-line-inactive header-line))
+  (let ((faces-to-toggle '(mode-line mode-line-inactive))
         (enabled-color "light gray")
         (disabled-color "#d6ebd6"))
-    (cond (fingers-mode-active
-           (message "Fingers mode is active, setting faces to [%s]" enabled-color)
-           (mapcar (lambda (face) (set-face-background face enabled-color)) faces-to-toggle))
+    (cond (fingers-mode
+           (mapcar (lambda (face) (set-face-background face enabled-color))
+                   faces-to-toggle))
           (t
-           (message "Fingers mode is inactive, setting faces to [%s]" disabled-color)
-           (mapcar (lambda (face) (set-face-background face disabled-color)) faces-to-toggle)))))
+           (mapcar (lambda (face) (set-face-background face disabled-color))
+                   faces-to-toggle)))))
+
+(add-hook 'fingers-mode-hook 'fingers-mode-visual-toggle)
 
 
 ;; ========== Use fgeller's Highlight-thing.el ==========
 ;; https://github.com/fgeller/highlight-thing.el
 
-(add-to-list 'load-path "~/.emacs.d/highlight-thing.el")
 (require 'highlight-thing)
-
 (highlight-thing-mode 1)
 

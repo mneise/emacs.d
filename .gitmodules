@@ -1,6 +1,0 @@
-[submodule "fingers.el"]
-	path = fingers.el
-	url = git@github.com:fgeller/fingers.el.git
-[submodule "highlight-thing.el"]
-	path = highlight-thing.el
-	url = git@github.com:fgeller/highlight-thing.el.git
