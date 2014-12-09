@@ -65,6 +65,9 @@
 ;; turn on column number mode
 (column-number-mode 1)
 
+;; show line numbers
+(global-linum-mode 1)
+
 ;; set font and font size
 (set-face-attribute 'default nil :font "Consolas" :height 140)
 
