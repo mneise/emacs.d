@@ -217,11 +217,15 @@
 (define-key global-map (kbd "C-;") 'c/helm-jump)
 (define-key global-map (kbd "C-x C-f") 'helm-find-files)
 
+(unless helm-source-buffers-list
+  (setq helm-source-buffers-list
+        (helm-make-source "Buffers" 'helm-source-buffers)))
+
 (defun c/helm-jump ()
   (interactive)
   (helm :sources `(helm-source-buffers-list
-                   ,(helm-make-source "Git files" 'helm-ls-git-source)
                    helm-source-recentf
+                   ,(helm-make-source "Git files" 'helm-ls-git-source)
                    helm-source-buffer-not-found)))
 
 (setq helm-idle-delay 0.01)
@@ -240,7 +244,6 @@
 
 (require 'expand-region)
 (global-set-key (kbd "C-c e w") 'er/expand-region)
-(global-set-key (kbd "C-c e s") 'er/contract-region)
 
 
 ;; ========== I18n ==========
@@ -297,6 +300,7 @@
 (key-chord-mode 1)
 (key-chord-define-global "fj" 'global-fingers-mode)
 (add-to-list 'fingers-mode-excluded-major-modes 'magit-status-mode)
+(add-to-list 'fingers-mode-excluded-major-modes 'magit-key-mode)
 
 (defun fingers-mode-visual-toggle ()
   (let ((faces-to-toggle '(mode-line mode-line-inactive))
