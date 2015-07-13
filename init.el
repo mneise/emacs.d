@@ -148,6 +148,7 @@
 ;; magit configurations
 (require 'magit)
 (define-key global-map (kbd "C-c mm") 'magit-status)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 
 ;; ========== JavaScript ==========
@@ -155,9 +156,9 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ;; use tern
-(add-to-list 'load-path "~/tern/emacs/")
-(autoload 'tern-mode "tern.el" nil t)
-(add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+;; (add-to-list 'load-path "~/tern/emacs/")
+;; (autoload 'tern-mode "tern.el" nil t)
+;; (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
 
 (add-hook 'js2-mode-hook 'fci-mode)
 (add-hook 'js2-mode-hook
@@ -223,9 +224,15 @@
 
 (defun c/helm-jump ()
   (interactive)
+
+  (unless (or helm-source-ls-git (helm-ls-git-not-inside-git-repo))
+    (setq helm-source-ls-git
+          (helm-make-source "Git files" 'helm-ls-git-source
+            :fuzzy-match helm-ls-git-fuzzy-match)))
+
   (helm :sources `(helm-source-buffers-list
                    helm-source-recentf
-                   ,(helm-make-source "Git files" 'helm-ls-git-source)
+                   helm-source-ls-git
                    helm-source-buffer-not-found)))
 
 (setq helm-idle-delay 0.01)
@@ -299,8 +306,6 @@
 (require 'key-chord)
 (key-chord-mode 1)
 (key-chord-define-global "fj" 'global-fingers-mode)
-(add-to-list 'fingers-mode-excluded-major-modes 'magit-status-mode)
-(add-to-list 'fingers-mode-excluded-major-modes 'magit-key-mode)
 
 (defun fingers-mode-visual-toggle ()
   (let ((faces-to-toggle '(mode-line mode-line-inactive))
