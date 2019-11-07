@@ -12,10 +12,29 @@
 
 ;; add package repositories
 (require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (when no-ssl
+    (warn "\
+Your version of Emacs does not support SSL connections,
+which is unsafe because it allows man-in-the-middle attacks.
+There are two things you can do about this warning:
+1. Install an Emacs version that does support SSL and be safe.
+2. Remove this warning from your init file so you won't see it again."))
+
+  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+
+  (when (< emacs-major-version 24)
+    ;; For important compatibility libraries like cl-lib
+    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+;;                          ("marmalade" . "http://marmalade-repo.org/packages/")
+;;                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 ;; install packages if they haven't been installed yet
 (defun c/require-package (package &optional min-version no-refresh)
@@ -30,12 +49,14 @@
 
 (setq c/elpa-packages '(
                         4clojure
-                        ac-cider
                         ag
+                        wgrep
+                        wgrep-ag
                         auto-complete
                         cider
                         clojure-mode
                         color-theme-sanityinc-solarized
+                        company
                         expand-region
                         fill-column-indicator
                         fingers
@@ -45,6 +66,7 @@
                         highlight-thing
                         js2-mode
                         magit
+                        markdown-mode
                         multiple-cursors
                         python
                         scala-mode2
@@ -175,25 +197,23 @@
 
 ;; cider
 (add-hook 'clojure-mode-hook 'cider-mode)
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'cider-mode-hook #'eldoc-mode)
+(add-hook 'cider-repl-mode-hook #'company-mode)
+(add-hook 'cider-mode-hook #'company-mode)
 
-;; ac-cider
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'cider-mode))
 
-;; Poping-up contextual documentation
-(eval-after-load "cider"
-  '(define-key cider-mode-map (kbd "C-c C-d") 'ac-cider-popup-doc))
+;; inf-clojure
 
+(defun figwheel-repl ()
+  (interactive)
+  (inf-clojure "lein figwheel"))
+
+(add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 
 ;; ========== Autocomplete ==========
 
-(require 'auto-complete-config)
-(ac-config-default)
+;; (require 'auto-complete-config)
+;; (ac-config-default)
 
 
 ;; ========== Web development setup ==========
@@ -212,28 +232,29 @@
 
 (require 'helm-config)
 (require 'helm-ls-git)
+(require 'helm-for-files)
 
 (helm-mode 1)
 
-(define-key global-map (kbd "C-;") 'c/helm-jump)
+(define-key global-map (kbd "C-;") 'helm-for-files)
 (define-key global-map (kbd "C-x C-f") 'helm-find-files)
 
-(unless helm-source-buffers-list
-  (setq helm-source-buffers-list
-        (helm-make-source "Buffers" 'helm-source-buffers)))
+(unless helm-source-ls-git
+  (setq helm-source-ls-git
+        (helm-make-source "Git files" 'helm-ls-git-source
+          :fuzzy-match helm-ls-git-fuzzy-match)))
 
-(defun c/helm-jump ()
-  (interactive)
+(custom-set-variables '(helm-for-files-preferred-list '(helm-source-buffers-list
+                                                        helm-source-recentf
+                                                        helm-source-ls-git)))
 
-  (unless (or helm-source-ls-git (helm-ls-git-not-inside-git-repo))
-    (setq helm-source-ls-git
-          (helm-make-source "Git files" 'helm-ls-git-source
-            :fuzzy-match helm-ls-git-fuzzy-match)))
+;; (defun c/helm-jump ()
+;;   (interactive)
 
-  (helm :sources `(helm-source-buffers-list
-                   helm-source-recentf
-                   helm-source-ls-git
-                   helm-source-buffer-not-found)))
+;;   (helm :sources `(helm-source-buffers-list
+;;                    helm-source-recentf
+;;                    helm-source-ls-git
+;;                    helm-source-buffer-not-found)))
 
 (setq helm-idle-delay 0.01)
 (setq helm-input-idle-delay 0.01)
@@ -250,8 +271,7 @@
 ;; ========== Expand Region ==========
 
 (require 'expand-region)
-(global-set-key (kbd "C-c e w") 'er/expand-region)
-
+(global-set-key (kbd "C-c e r") 'er/expand-region)
 
 ;; ========== I18n ==========
 
@@ -268,6 +288,10 @@
 ;; ========== Silver Searcher ==========
 
 (require 'ag)
+(setq helm-ag-use-agignore t)
+(with-eval-after-load 'ag
+(add-to-list 'ag-ignore-list "style.css" t)  )
+
 (global-set-key (kbd "C-c a g") 'ag-project)
 
 
@@ -278,6 +302,9 @@
           (lambda ()
             (set-fill-column 80)))
 (add-hook 'org-mode-hook 'auto-fill-mode)
+(setq org-todo-keywords
+      '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
+(setq org-element-use-cache nil)
 
 
 ;; ========== Check Spelling ==========
@@ -325,5 +352,46 @@
 ;; https://github.com/fgeller/highlight-thing.el
 
 (require 'highlight-thing)
-(highlight-thing-mode 1)
+(global-highlight-thing-mode)
 
+
+(add-hook 'before-save-hook #'gofmt-before-save)
+
+;; ========== Markdown ==========
+
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+;; ========== C++ ==========
+
+(require 'clang-format)
+(global-set-key (kbd "C-c i") 'clang-format-region)
+(global-set-key (kbd "C-c u") 'clang-format-buffer)
+
+(setq clang-format-style-option "llvm")
+
+;; ========== exec-path-from-shell ==========
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+;; ========== Projectile ==========
+
+(require 'projectile)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(projectile-mode +1)
+
+;; ========== flycheck-joker ==========
+
+(require 'flycheck-joker)
+
+;; ========== cucumber.el ==========
+
+(require 'feature-mode)
+(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
+
+(global-set-key (kbd "C-u") 'undo)
